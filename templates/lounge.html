@@ -1,0 +1,19 @@
+<title>Loup Garou CPP</title>
+<link href="{{ url_for('static', filename='css.css') }}" rel="stylesheet" type="text/css" />
+<body>
+	<div>
+	</div>
+	<div class="form-style-6">
+	<h1>Bienvenue, {{nomduser}}</h1>
+	<p>La partie n'a pas encore commencé, les inscriptions sont encore possibles.</p>
+	<p>
+	Actuellement inscrits : <br>
+	{% for one in users %}
+	- {{ one }} <br>
+	{% endfor %}
+	</p>
+	<form action="/">
+		<input type="submit" value="Retour à la page d'accueil">
+	</form>
+	</div>
+</body>

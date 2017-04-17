@@ -1,0 +1,27 @@
+<title>Loup Garou CPP</title>
+<link href="{{ url_for('static', filename='css.css') }}" rel="stylesheet" type="text/css" />
+<body>
+	<div>
+	</div>
+	<div class="form-style-6">
+		<h1>Bienvenue, {{nomduser}}</h1>
+		<p>{{ message }}</p>
+		<div class="avertissement">
+		<p> Dernier mort : tamere </p>
+		</div>
+		<p>
+		Votes actuels : <br> <br>
+		{% for one in users %}
+		- {{ one }} : {{ users[one] }} <br>
+		{% endfor %}
+		</p>
+		{% if message == "C'est le jour - tout le monde participe !" %}
+		<form action="/voteAll">
+			<input type="submit" value="Aller voter">
+		</form>
+		{% endif %}
+		<form action="/">
+			<input type="submit" value="Retour à la page d'accueil">
+		</form>
+	</div>
+</body>

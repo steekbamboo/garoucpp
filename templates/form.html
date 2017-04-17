@@ -1,0 +1,22 @@
+<title>Loup Garou CPP</title>
+<link href="{{ url_for('static', filename='css.css') }}" rel="stylesheet" type="text/css" />
+<body>
+	<div class="form-style-6">
+	<h1>{{message}}</h1>
+	{% if type is equalto "inscription" %}
+	<div class="avertissement">
+	<p> Veuillez choisir un nom d'utilisateur permettant de vous identifier facilement (par exemple votre nom d'utilisateur Chamilo) <br>
+	Nous vous rappelons que les mots de passe ne seront pas chiffrés. Agissez en conséquence (voir page d'accueil pour plus de détails)
+	</p>
+	</div>
+	{% endif %}
+	<form action="/{{ type }}" method="post">
+	<input type="text" name="say" placeholder="Identifiant" />
+	<input type="password" name="to" placeholder="Mot de passe" />
+	<input type="submit" value="Valider" />
+	</form>
+	<form action="/">
+		<input type="submit" value="Retour à la page d'accueil">
+	</form>
+	</div>
+</body>

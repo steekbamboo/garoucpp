@@ -1,0 +1,22 @@
+<title>Loup Garou CPP</title>
+<link href="{{ url_for('static', filename='css.css') }}" rel="stylesheet" type="text/css" />
+<body>
+	<div>
+	</div>
+	<div class="form-style-6">
+	<h1>Choisissez la personne à tuer</h1>
+	<p> Si vous avez déjà voté, votre ancien vote sera remplacé par celui là. <br>
+	Actuellement connecté en tant que : {{ nomduser }} </p>
+	<form action="/succes" method="post">
+		<select name="nom">
+		{% for a in vivants %}
+		<option> {{ a }}
+		{% endfor %}
+		</select>
+		<input type="submit" value="Voter" />
+	</form>
+	<form action="/">
+		<input type="submit" value="Retour à la page d'accueil">
+	</form>
+	</div>
+</body>
