@@ -6,16 +6,20 @@
 	<div class="form-style-6">
 		<h1>Bienvenue, {{nomduser}}</h1>
 		<div class="avertissement">
-		<p> Dernier mort : tamere </p>
+		<p> Dernier mort : {{ rip[0] }} , tué par {{ rip[1] }}. Il était {{ rip[2] }}</p>
 		</div>
-		<p> C'est actuellement à TAMERE de jouer </p>
+		<p> C'est actuellement le tour des {{ moment }}</p>
 		<p> Visiblement, ce n'est pas à vous de jouer. Vous avez ci-dessous la liste des personnes mortes, et la liste de personnes vivantes - nous vous rapellons qu'une grande partie de Loups Garous CPP ™ se joue en chair et en os à la prépa : coups tordus, alliances, espionnage, tout est permis ! </p>
 		<p> Vivants : <br> <br> 
 		{% for a in vivants %}
 		- {{ a }} <br>
 		{% endfor %}
 		</p>
-		<p> Morts : </p>
+		<p> Cimetière : <br> <br>
+		{% for a in morts %}
+		- {{ a }} <br>
+		{% endfor %}
+		</p>
 		<form action="/">
 			<input type="submit" value="Retour à la page d'accueil">
 		</form>

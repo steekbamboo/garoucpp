@@ -2,11 +2,16 @@ from flask import Flask, render_template, request, session
 import sqlite3
 app = Flask(__name__)
 app.secret_key = 'tamere'
-#moment = 'start'
-#moment = 'voteVillage'
-moment = 'loups'
+
 
 def checkDatabase():
+    db = sqlite3.connect('users.db')
+    cursor = db.cursor()
+    cursor.execute("""SELECT * FROM ext""")
+    rows = cursor.fetchall()
+    db.close()
+    moment = rows[0][0]
+
     roles = {}
     votes = {}
     vivants = []
@@ -37,12 +42,20 @@ def checkDatabase():
                 if votes[a] is not None:
                     cibles[votes[a]] += 1
                     i += 1
-        if i == len(cibles):
+        if i == len(vivants):
             choisi = max(cibles, key=cibles.get)
             db = sqlite3.connect('users.db')
             cursor = db.cursor()
             cursor.execute("""UPDATE users SET role = NULL WHERE username = ?""", (choisi,))
             cursor.execute("""UPDATE users SET vote = NULL""")
+            db.commit()
+            db.close()
+            db = sqlite3.connect('users.db')
+            cursor = db.cursor()
+            cursor.execute("""UPDATE ext SET moment = "loups" """)
+            cursor.execute("""UPDATE ext SET lastDead = ? """, (choisi,))
+            cursor.execute("""UPDATE ext SET causeDeath = "le vote du village" """)
+            cursor.execute("""UPDATE ext SET roleDeath = ? """, (roles[choisi],))
             db.commit()
             db.close()
     if moment == 'loups':
@@ -54,12 +67,20 @@ def checkDatabase():
             if votes[a] is not None:
                 cibles[votes[a]] += 1
                 i += 1
-        if i == len(cibles):
+        if i == len(loups):
             choisi = max(cibles, key=cibles.get)
             db = sqlite3.connect('users.db')
             cursor = db.cursor()
             cursor.execute("""UPDATE users SET role = NULL WHERE username = ?""", (choisi,))
             cursor.execute("""UPDATE users SET vote = NULL""")
+            db.commit()
+            db.close()
+            db = sqlite3.connect('users.db')
+            cursor = db.cursor()
+            cursor.execute("""UPDATE ext SET moment = "voteVillage" """)
+            cursor.execute("""UPDATE ext SET lastDead = ? """, (choisi,))
+            cursor.execute("""UPDATE ext SET causeDeath = "les loups" """)
+            cursor.execute("""UPDATE ext SET roleDeath = ? """, (roles[choisi],))
             db.commit()
             db.close()
 
@@ -71,6 +92,13 @@ def form():
 
 @app.route('/signin', methods=['GET', 'POST'])
 def formSignIn():
+    db = sqlite3.connect('users.db')
+    cursor = db.cursor()
+    cursor.execute("""SELECT * FROM ext""")
+    rows = cursor.fetchall()
+    db.close()
+    moment = rows[0][0]
+
     if moment == 'start':
         return render_template('form.html', message='Inscrivez vous', type='inscription')
     else:
@@ -85,14 +113,29 @@ def voteAll():
     rows = cursor.fetchall()
     db.close()
     vivants = []
+    loups = []
     for row in rows:
         if row[3] is not None:
             vivants.append(row[1])
+        if row[3] == 'loup':
+            loups.append(row[1])
+    if session['username'] in loups:
+        for i in range(len(vivants)):
+            if vivants[i] in loups:
+                vivants[i] = vivants[i] + " (loup garou)"
     return render_template('choix.html', vivants=vivants, nomduser=session['username'])
 
 
 @app.route('/connection', methods=['GET', 'POST'])
 def hello():
+    db = sqlite3.connect('users.db')
+    cursor = db.cursor()
+    cursor.execute("""SELECT * FROM ext""")
+    rows = cursor.fetchall()
+    db.close()
+    moment = rows[0][0]
+    rip = (rows[0][1], rows[0][2], rows[0][3])
+
     session['username'] = request.form['say']
     nomduser = request.form['say']
     motdepasse = request.form['to']
@@ -101,6 +144,8 @@ def hello():
     votes = {}
     vivants = []
     loups = []
+    morts = []
+    villageois = []
     db = sqlite3.connect('users.db')
     cursor = db.cursor()
     cursor.execute("""SELECT * FROM users""")
@@ -114,33 +159,51 @@ def hello():
             vivants.append(row[1])
         if row[3] == 'loup':
             loups.append(row[1])
+        if row[3] == 'villageois':
+            villageois.append(row[1])
+        if row[3] is None:
+            morts.append(row[1])
     personnes = users.keys()
     if nomduser in personnes:
         if motdepasse == users[nomduser]:
-            if moment == 'voteVillage':
-                votesVivants = {}
-                for g in vivants:
-                    if votes[g] is None:
-                        votesVivants[g] = "N'a pas encore voté"
-                    else:
-                        votesVivants[g] = votes[g]
-                if nomduser in vivants:
-                    return render_template('voteVillage.html', message="C'est le jour - tout le monde participe !", nomduser=nomduser, users=votesVivants)
-                else:
-                    return render_template('voteVillage.html', message="Vous êtes mort - vous ne pouvez pas voter.", nomduser=nomduser, users=votesVivants)
-            elif moment == 'loups':
-                if roles[nomduser] == 'villageois':
-                    return render_template('wait.html', nomduser=nomduser, vivants=vivants)
-                if roles[nomduser] == 'loup':
-                    votesLoups = {}
-                    for g in loups:
-                        if votes[g] is None:
-                            votesLoups[g] = "N'a pas encore voté"
-                        else:
-                            votesLoups[g] = votes[g]
-                    return render_template('loungeGarous.html', nomduser=nomduser, users=votesLoups)
-            else:
+            if moment == 'start':
                 return render_template('lounge.html', nomduser=nomduser, users=personnes)
+            else:
+                if loups == []:
+                    for a in roles:
+                        if roles[a] is None:
+                            roles[a] = "Mort"
+                    return render_template('win.html', camp="villageois", roles=roles, rip=rip)
+                elif villageois == []:
+                    for a in roles:
+                        if roles[a] is None:
+                            roles[a] = "Mort"
+                    return render_template('win.html', camp="loups", roles=roles, rip=rip)
+                else:
+                    if moment == 'voteVillage':
+                        votesVivants = {}
+                        for g in vivants:
+                            if votes[g] is None:
+                                votesVivants[g] = "N'a pas encore voté"
+                            else:
+                                votesVivants[g] = votes[g]
+                        if nomduser in vivants:
+                            return render_template('voteVillage.html', message="C'est le jour - tout le monde participe !", nomduser=nomduser, users=votesVivants, morts=morts, rip=rip)
+                        else:
+                            return render_template('voteVillage.html', message="Vous êtes mort - vous ne pouvez pas voter.", nomduser=nomduser, users=votesVivants, morts=morts, rip=rip)
+                    elif moment == 'loups':
+                        if roles[nomduser] == 'villageois':
+                            return render_template('wait.html', nomduser=nomduser, vivants=vivants, morts=morts, rip=rip, moment=moment)
+                        if roles[nomduser] == 'loup':
+                            votesLoups = {}
+                            for g in loups:
+                                if votes[g] is None:
+                                    votesLoups[g] = "N'a pas encore voté"
+                                else:
+                                    votesLoups[g] = votes[g]
+                            return render_template('loungeGarous.html', nomduser=nomduser, users=votesLoups, vivants=vivants, morts=morts, rip=rip)
+                        else:
+                            return render_template('mort.html', nomduser=nomduser, vivants=vivants, morts=morts)
         else:
             return render_template('form.html', message='Mot de passe ou utilisateur incorrect', type='connection')
     else:
