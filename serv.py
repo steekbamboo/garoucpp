@@ -135,10 +135,17 @@ def hello():
     db.close()
     moment = rows[0][0]
     rip = (rows[0][1], rows[0][2], rows[0][3])
-
-    session['username'] = request.form['say']
-    nomduser = request.form['say']
-    motdepasse = request.form['to']
+    try:
+        nomduser = session['username']
+        motdepasse = session['password']
+    except:
+        try:
+            nomduser = request.form['say']
+            motdepasse = request.form['to']
+            session['username'] = request.form['say']
+            session['password'] = request.form['to']
+        except:
+            return render_template('form.html', message='Connectez vous', type='connection')
     users = {}
     roles = {}
     votes = {}
