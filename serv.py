@@ -87,6 +87,11 @@ def checkDatabase():
 
 @app.route('/login', methods=['GET', 'POST'])
 def form():
+    try:
+        session.pop('username', None)
+        session.pop('password', None)
+    except:
+        None
     return render_template('form.html', message='Connectez vous', type='connection')
 
 
@@ -212,9 +217,14 @@ def hello():
                         else:
                             return render_template('mort.html', nomduser=nomduser, vivants=vivants, morts=morts)
         else:
-            return render_template('form.html', message='Mot de passe ou utilisateur incorrect', type='connection')
+            try:
+                session.pop('username', None)
+                session.pop('password', None)
+            except:
+                None
+            return render_template('form.html', message='Mot de passe incorrect', type='connection')
     else:
-        return render_template('form.html', message='Mot de passe ou utilisateur incorrect', type='connection')
+        return render_template('form.html', message='Utilisateur incorrect', type='connection')
 
 
 @app.route('/inscription', methods=['GET', 'POST'])
