@@ -13,9 +13,10 @@ NB : they are already installed in Annaconda | NB : ils sont installés de base
 2. Using the terminal (Linux - Mac OS) or cmd (Windows), navigate to the directory where serv.py is | En utilisant le terminal (Mac OS ou Linux) ou la cmd (Windows), naviguez vers l'emplacement où est serv.py
 3. Windows : `set FLASK_APP=serv.py`  | Mac OS / Linux : `export FLASK_APP=serv.py`
 4. `flask run`
-5. The website will be available at the localhost adress shown in the cmd or terminal
-6. You'll need to edit `users.db` : during the sign-in phase, `moment` in `ext` will have to be set to "start". Then, you'll need to manually atribute the roles, and set the moment to "loups". This can be done with any sqlite database editor.
-Note : 6 is WIP.
+5. The website will be available at the localhost adress shown in the cmd or terminal | Le site internet sera accessible à l'adresse affichée sur le terminal ou la cmd
+6. You can control the game by adding '/controle' at the end of the adress, to launch the game, launch a new one, see who is who etc... | Vous pouvez lancer une nouvelle partie, voir les roles de tout le monde etc en ajoutant '/controle' à la fin de l'adresse. 
+
+NB : Password for /controle : contact me (baruch.byrdin@grenoble-inp.org).
 
 
 ## Bug report 
