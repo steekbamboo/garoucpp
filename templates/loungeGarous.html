@@ -6,9 +6,11 @@
 	<div class="form-style-6">
 	<h1>Bienvenue, {{nomduser}}</h1>
 	<p>Vous êtes un loup-garou.</p>
+	{% if rip [0] != None %}
 	<div class="avertissement">
 	<p> Dernier mort : {{ rip[0] }} , tué par {{ rip[1] }}. Il était {{ rip[2] }}</p>
 	</div>
+	{% endif %}
 	<p>
 	Votes actuels : <br> <br>
 	{% for one in users %}

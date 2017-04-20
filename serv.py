@@ -215,7 +215,7 @@ def hello():
                                     votesLoups[g] = votes[g]
                             return render_template('loungeGarous.html', nomduser=nomduser, users=votesLoups, vivants=vivants, morts=morts, rip=rip)
                         else:
-                            return render_template('mort.html', nomduser=nomduser, vivants=vivants, morts=morts)
+                            return render_template('mort.html', nomduser=nomduser, vivants=vivants, morts=morts, rip=rip, moment=moment)
         else:
             try:
                 session.pop('username', None)

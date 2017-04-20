@@ -5,9 +5,11 @@
 	</div>
 	<div class="form-style-6">
 		<h1>Bienvenue, {{nomduser}}</h1>
+		{% if rip [0] != None %}
 		<div class="avertissement">
 		<p> Dernier mort : {{ rip[0] }} , tué par {{ rip[1] }}. Il était {{ rip[2] }}</p>
 		</div>
+		{% endif %}
 		<p> C'est actuellement le tour des {{ moment }}</p>
 		<p> Visiblement, Vous êtes mort. Vous avez ci-dessous la liste des autres personnes mortes, et la liste de personnes vivantes - nous vous rapellons qu'une grande partie de Loups Garous CPP ™ se joue en chair et en os à la prépa : coups tordus, alliances, espionnage, tout est permis ! Cependant, en tant que mort, veuillez agir comme tel (à vous, maintenant, d'interpréter cette définition comme bon vous semble...)</p>
 		<p> Vivants : <br> <br> 
