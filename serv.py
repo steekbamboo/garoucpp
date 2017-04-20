@@ -246,6 +246,11 @@ def helloConnection():
             cursor.execute("""INSERT INTO users(id, username, password) VALUES(NULL, ?, ?)""", (nomduser, motdepasse))
             db.commit()
             db.close()
+            try:
+                session.pop('username', None)
+                session.pop('password', None)
+            except:
+                None
             return(render_template("succes.html", choix="inscription de " + nomduser))
     else:
         return render_template('form.html', message='Mot de passe ou utilisateur vide', type='inscription')
@@ -290,6 +295,82 @@ def succes():
     db.close()
     checkDatabase()
     return(render_template("succes.html", choix="tuer " + request.form['nom']))
+
+
+@app.route('/controle', methods=['POST', 'GET'])
+def adminisration():
+    return render_template('adminAuth.html')
+
+
+@app.route('/administration', methods=['POST', 'GET'])
+def admin():
+    if request.form['mdp'] == 'qsdf':
+        db = sqlite3.connect('users.db')
+        cursor = db.cursor()
+        cursor.execute("""SELECT * FROM ext""")
+        rows = cursor.fetchall()
+        db.close()
+        moment = rows[0][0]
+        users = {}
+        roles = {}
+        votes = {}
+        vivants = []
+        loups = []
+        morts = []
+        villageois = []
+        db = sqlite3.connect('users.db')
+        cursor = db.cursor()
+        cursor.execute("""SELECT * FROM users""")
+        rows = cursor.fetchall()
+        db.close()
+        for row in rows:
+            users[row[1]] = row[2]
+            roles[row[1]] = row[3]
+            votes[row[1]] = row[4]
+            if row[3] is not None:
+                vivants.append(row[1])
+            if row[3] == 'loup':
+                loups.append(row[1])
+            if row[3] == 'villageois':
+                villageois.append(row[1])
+            if row[3] is None:
+                morts.append(row[1])
+        personnes = users.keys()
+        if request.form['hi'] == "Observer la partie":
+            return(render_template('admin.html', moment=moment, users=users, roles=roles, votes=votes))
+        elif request.form['hi'] == "Ouvrir les inscriptions":
+            db = sqlite3.connect('users.db')
+            cursor = db.cursor()
+            cursor.execute("""UPDATE ext SET moment = "start" """)
+            cursor.execute("""UPDATE ext SET lastDead = NULL """)
+            cursor.execute("""UPDATE ext SET causeDeath = NULL """)
+            cursor.execute("""UPDATE ext SET roleDeath = NULL """)
+            cursor.execute("""DELETE FROM users""")
+            db.commit()
+            db.close()
+            return("Done")
+        elif request.form['hi'] == "Commencer une partie":
+            nombre = len(users)
+            if nombre < 8:
+                nombregarous = 1
+            elif nombre >= 8 and nombre < 12:
+                nombregarous = 2
+            elif nombre > 12:
+                nombregarous = 3
+            elif nombre > 18:
+                nombregarous = 4
+            import random
+            definirGarous = random.sample(list(users), nombregarous)
+            db = sqlite3.connect('users.db')
+            cursor = db.cursor()
+            cursor.execute("""UPDATE ext SET moment = "loups" """)
+            for a in definirGarous:
+                cursor.execute("""UPDATE users SET role = "loup" WHERE username = ?""", (a,))
+            cursor.execute("""UPDATE users SET role = "villageois" WHERE role is NULL""")
+            db.commit()
+            db.close()
+            return("Done")
+
 
 
 if __name__ == "__main__":
