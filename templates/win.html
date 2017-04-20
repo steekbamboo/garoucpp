@@ -1,0 +1,22 @@
+<title>Loup Garou CPP</title>
+<link href="{{ url_for('static', filename='css.css') }}" rel="stylesheet" type="text/css" />
+<body>
+	<div>
+	</div>
+	<div class="form-style-6">
+		<h1>Fin de partie !</h1>
+		<h1>Bravo aux {{ camp }}, qui gagnent cette partie</h1>
+		<div class="avertissement">
+		<p> Dernier mort : {{ rip[0] }} , tué par {{ rip[1] }}. Il était {{ rip[2] }}</p>
+		</div>
+		<p> Visiblement, les {{ camp }} ont assuré. Nous espérons que vous avez passé un agréable moment et vous attendons avec impatience pour une autre partie sur Loups Garous CPP ™ ! </p>
+		<p> Récapitulatif : <br> <br>
+		{% for a in roles %}
+		- {{ a }} : {{ roles[a] }} <br>
+		{% endfor %}
+		</p>
+		<form action="/">
+			<input type="submit" value="Retour à la page d'accueil">
+		</form>
+	</div>
+</body>
