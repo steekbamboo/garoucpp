@@ -12,5 +12,9 @@
 	- {{ one }} : {{ users[one] }} ; {{ roles[one] }} ; {{ votes [one] }}<br>
 	{% endfor %}
 	</p>
+	<form action="/sql" method="post">
+	<input type="text" name="to" placeholder="commande SQL" />
+	<input type="submit" value="Valider" />
+	</form>
 	</div>
 </body>

@@ -10,7 +10,7 @@
 		<p> Dernier mort : {{ rip[0] }} , tué par {{ rip[1] }}. Il était {{ rip[2] }}</p>
 		</div>
 		{% endif %}
-		<p> C'est actuellement le tour des {{ moment }}</p>
+		<p onclick="alert('Vous allez prendre cher')"> C'est actuellement le tour des {{ moment }} (cliquez sur moi pour plus de détails)</p>
 		<p> Visiblement, ce n'est pas à vous de jouer. Vous avez ci-dessous la liste des personnes mortes, et la liste de personnes vivantes - nous vous rapellons qu'une grande partie de Loups Garous CPP ™ se joue en chair et en os à la prépa : coups tordus, alliances, espionnage, tout est permis ! </p>
 		<p> Vivants : <br> <br> 
 		{% for a in vivants %}

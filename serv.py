@@ -147,8 +147,6 @@ def hello():
         try:
             nomduser = request.form['say']
             motdepasse = request.form['to']
-            session['username'] = request.form['say']
-            session['password'] = request.form['to']
         except:
             return render_template('form.html', message='Connectez vous', type='connection')
     users = {}
@@ -178,6 +176,11 @@ def hello():
     personnes = users.keys()
     if nomduser in personnes:
         if motdepasse == users[nomduser]:
+            try:
+                session['username'] = request.form['say']
+                session['password'] = request.form['to']
+            except:
+                None
             if moment == 'start':
                 return render_template('lounge.html', nomduser=nomduser, users=personnes)
             else:
@@ -370,6 +373,17 @@ def admin():
             db.commit()
             db.close()
             return("Done")
+
+
+@app.route('/sql', methods=['POST', 'GET'])
+def sqlcommand():
+    command = request.form['to']
+    db = sqlite3.connect('users.db')
+    cursor = db.cursor()
+    cursor.execute(command)
+    db.commit()
+    db.close()
+    return("Done")
 
 
 
